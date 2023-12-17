@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/ui/screens/home/home_screen.dart';
+import 'package:todo_app/ui/screens/home/task_lists/edit_task_screen.dart';
 import 'package:todo_app/ui/widgets/my_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             routes: {
               HomeScreen.routeName: (context) => HomeScreen(),
+              EditTaskScreen.routeName:(context)=>EditTaskScreen(),
             },
             initialRoute: HomeScreen.routeName,
             theme: MyTheme.lightTheme,
