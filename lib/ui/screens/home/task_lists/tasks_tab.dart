@@ -10,6 +10,7 @@ class TasksTab extends StatelessWidget {
     return Container(
       child: Column(
         children: [
+          SizedBox(height: 25,),
           CalendarTimeline(
             initialDate: DateTime.now(),
             firstDate:DateTime.now().subtract(Duration(days:365)),
