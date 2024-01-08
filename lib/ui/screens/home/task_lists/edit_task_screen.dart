@@ -3,10 +3,11 @@ import 'package:todo_app/model/task_model.dart';
 
 class EditTaskScreen extends StatelessWidget {
   static const String routeName = "editScreen";
-
+    // EditTaskScreen(this.task);
+    // Task task;
   @override
   Widget build(BuildContext context) {
-    // var task=ModalRoute.of(context)!.settings.arguments as Task;
+    // var tasks=ModalRoute.of(context)!.settings.arguments as Task;
     var mediaQuery = MediaQuery.of(context).size;
     var formKey = GlobalKey<FormState>();
     return Scaffold(

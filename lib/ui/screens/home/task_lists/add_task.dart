@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/model/dialog_utils.dart';
 import 'package:todo_app/model/firebase_utlis.dart';
 import 'package:todo_app/model/task_model.dart';
 
@@ -28,23 +29,23 @@ class _AddTaskState extends State<AddTask> {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Title',hintText: 'Enter task Title'),
+              decoration: InputDecoration(
+                  labelText: 'Title', hintText: 'Enter task Title'),
               onChanged: (text) {
                 title = text;
               },
-              validator: (text){
-                if(text==null || text.isEmpty){
+              validator: (input) {
+                if (input == null || input.trim().isEmpty) {
                   return 'Please enter text Tiltle';
                 }
                 return null;
               },
             ),
             TextFormField(
-              minLines: 4,
-              maxLines: 4,
-              decoration: InputDecoration(labelText: 'Descreption',hintText: 'Enter task Descrption'),
-              validator: (text){
-                if(text==null || text.isEmpty){
+              decoration: InputDecoration(
+                  labelText: 'Descreption', hintText: 'Enter task Descrption'),
+              validator: (input) {
+                if (input == null || input.trim().isEmpty) {
                   return 'Please enter task description';
                 }
                 return null;
@@ -79,6 +80,7 @@ class _AddTaskState extends State<AddTask> {
             ElevatedButton(
                 onPressed: () {
                   AddTask();
+                  // Navigator.pop(context);
                 },
                 child: const Text('Submit'))
           ],
@@ -103,12 +105,46 @@ class _AddTaskState extends State<AddTask> {
   }
 
   void AddTask() {
-    if(formKey.currentState?.validate()==true){
-      Task task=Task(title: title, description: description, date: selectedDate.microsecondsSinceEpoch,);
-      addTaskToFirebase(task).timeout(Duration(milliseconds: 500),
-      onTimeout: (){
-        print('Add successfully');
-      });
+    if (formKey.currentState?.validate() == false) {
+      return;
     }
+
+    Task task = Task(
+      title: title,
+      description: description,
+      date: selectedDate.microsecondsSinceEpoch,
+    );
+    DialogUtils.showProgressDialog(context, 'loading....',
+        isDissmisable: false);
+    try {
+      addTaskToFirebase(task)
+        .timeout(Duration(milliseconds: 500), onTimeout: () {});
+      DialogUtils.hideDialog(context);
+      DialogUtils.showMessage(
+        context,
+        'The Task Add Successfully',
+        posActionTitle: 'Ok',
+        posAction: () {
+          Navigator.pop(context);
+        },
+        isDissmisable: false,
+        // negActionTitle: 'Cancle'
+      );
+    } catch (e) {DialogUtils.hideDialog(context);
+      DialogUtils.showMessage(
+        context,
+        'Error Please Try Again',
+        posActionTitle: 'Try again',
+        posAction: () {
+          AddTask();
+        },
+        isDissmisable: false,
+        negActionTitle: 'Cancle',
+        negAction: () {
+          Navigator.pop(context);
+        },
+      );}
+
+    
   }
 }

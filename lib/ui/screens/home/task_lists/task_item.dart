@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:todo_app/model/dialog_utils.dart';
+import 'package:todo_app/model/firebase_utlis.dart';
 import 'package:todo_app/model/task_model.dart';
 import 'package:todo_app/ui/screens/home/task_lists/edit_task_screen.dart';
 
-class TaskItem extends StatelessWidget {
-  // TaskItem(this.task);
-  // Task task;
+class TaskItem extends StatefulWidget {
+  TaskItem(this.task);
 
+  Task task;
+
+  @override
+  State<TaskItem> createState() => _TaskItemState();
+}
+
+class _TaskItemState extends State<TaskItem> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        // Navigator.of(context)
-        //     .pushNamed(EditTaskScreen.routeName, arguments: task);
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => EditTaskScreen(),)
+        Navigator.of(context).pushNamed(
+          EditTaskScreen.routeName,
         );
+        // Navigator.of(context).push(
+        //   MaterialPageRoute(builder: (context) => EditTaskScreen(task),)
+        // );
       },
       child: Container(
         padding: const EdgeInsets.all(15),
@@ -30,7 +39,9 @@ class TaskItem extends StatelessWidget {
                 motion: const DrawerMotion(),
                 children: [
                   SlidableAction(
-                    onPressed: (buildContext) {},
+                    onPressed: (buildContext) {
+                      deleteTasks();
+                    },
                     backgroundColor: Colors.red,
                     label: 'delete',
                     icon: Icons.delete,
@@ -64,10 +75,10 @@ class TaskItem extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Task Tiltle',
+                          widget.task.title,
                           style: Theme.of(context).textTheme.headlineMedium,
                         ),
-                        const Text('Task Desciption'),
+                        Text(widget.task.description),
                       ],
                     ),
                   ),
@@ -94,5 +105,19 @@ class TaskItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void deleteTasks() {
+    DialogUtils.showMessage(
+        context, 'Are You Sure You Want to Delete this task',
+        posActionTitle: 'yes', posAction: () async {
+      DialogUtils.showProgressDialog(context, 'Loading...');
+      await deleteTask(widget.task);
+      DialogUtils.hideDialog(context);
+      DialogUtils.showMessage(context, 'Task deleted Successfully',
+          posActionTitle: 'Ok', negActionTitle: 'Undo', negAction: () {
+        //Todo: Undo Delete
+      });
+    }, negActionTitle: 'cancle');
   }
 }
